@@ -1,0 +1,113 @@
+package com.pm.productcatalogservice.services;
+
+import com.pm.productcatalogservice.clients.FakeStoreApiClient;
+import com.pm.productcatalogservice.dtos.FakeStoreProductDto;
+import com.pm.productcatalogservice.models.Category;
+import com.pm.productcatalogservice.models.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+@Service
+public class FakeStoreProductService extends FakeStoreProductDto implements IProductService{
+    @Autowired
+    private RestTemplateBuilder restTemplateBuilder; //why autowired to manage many dependencies that's why we use autowired annotation
+
+    @Autowired
+    private FakeStoreApiClient fakeStoreApiClient;
+
+    public Product getProductById(Long productId){
+
+        if(fakeStoreApiClient.getProductById(productId)!=null){
+            FakeStoreProductDto fakeStoreProductDto=fakeStoreApiClient.getProductById(productId);
+            return from(fakeStoreProductDto);
+        }
+        return null;
+
+
+//        RestTemplate restTemplate = restTemplateBuilder.build();
+//        ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponseEntity=
+//                restTemplate
+//                        .getForEntity("http://fakestoreapi.com/products/{productId}",
+//                                FakeStoreProductDto.class, productId);
+//        if(fakeStoreProductDtoResponseEntity.getStatusCode().equals(HttpStatusCode.valueOf(200))&& fakeStoreProductDtoResponseEntity.getBody()!=null){
+//            return from(fakeStoreProductDtoResponseEntity.getBody());
+//        }
+//        return from(fakeStoreProductDto);
+//        return null;
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        List<Product>  products = new ArrayList<>();
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        ResponseEntity<FakeStoreProductDto[]> listResponseEntity=
+                restTemplate.getForEntity("https://fakestoreapi.com/products",FakeStoreProductDto[].class);
+        for(FakeStoreProductDto fakeStoreProductDto: listResponseEntity.getBody()){
+            products.add(from(fakeStoreProductDto));
+        }
+        return products;
+    }
+
+    @Override
+    public Product replaceProduct(Long productId, Product request) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        FakeStoreProductDto fakeStoreProductDto = from(request);
+        FakeStoreProductDto response= requestForEntity("https://fakestoreapi.com/users/{id}",HttpMethod.PUT,fakeStoreProductDto, FakeStoreProductDto.class ,productId).getBody();
+        //return null;
+        return from(response);
+    }
+
+    @Override
+    public Product createProduct(Product request) {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        FakeStoreProductDto fakeStoreProductDto = from(request);
+        FakeStoreProductDto response=requestForEntity("https://fakestoreapi.com/products",HttpMethod.POST,fakeStoreProductDto,FakeStoreProductDto.class).getBody();
+        return from(response);
+    }
+
+    private <T> ResponseEntity<T> requestForEntity(String url,HttpMethod httpMethod ,@Nullable Object request, Class<T> responseType, Object... uriVariables) throws RestClientException {
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
+        ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
+        return restTemplate.execute(url, httpMethod, requestCallback, responseExtractor, uriVariables);
+    }
+
+    private Product from(FakeStoreProductDto fakeStoreProductDto){
+        Product product = new Product();
+        product.setId(fakeStoreProductDto.getId());
+        product.setName(fakeStoreProductDto.getTitle());
+        product.setDescription(fakeStoreProductDto.getDescription());
+        product.setPrice(fakeStoreProductDto.getPrice());
+        product.setImageUrl(fakeStoreProductDto.getImage());
+        Category category = new Category();
+        category.setName(fakeStoreProductDto.getCategory());
+        product.setCategory(category);
+        return product;
+    }
+    private FakeStoreProductDto from(Product product){
+        FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
+        fakeStoreProductDto.setId(product.getId());
+        fakeStoreProductDto.setTitle(product.getName());
+        fakeStoreProductDto.setPrice(product.getPrice());
+        fakeStoreProductDto.setDescription(product.getDescription());
+        fakeStoreProductDto.setImage(product.getImageUrl());
+        if(product.getCategory()!=null){
+            fakeStoreProductDto.setCategory(product.getCategory().getName());
+        }
+        return fakeStoreProductDto;
+    }
+
+}
