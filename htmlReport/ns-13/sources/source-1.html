@@ -1,0 +1,190 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.pm.userauthenticationservice.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthController (com.pm.userauthenticationservice.controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.pm.userauthenticationservice.controllers;
+&nbsp;
+&nbsp;import com.pm.userauthenticationservice.dtos.LoginRequest;
+&nbsp;import com.pm.userauthenticationservice.dtos.SignupRequest;
+&nbsp;import com.pm.userauthenticationservice.dtos.UserDto;
+&nbsp;import com.pm.userauthenticationservice.dtos.ValidateTokenDto;
+&nbsp;import com.pm.userauthenticationservice.exceptions.PasswordMismatchException;
+&nbsp;import com.pm.userauthenticationservice.exceptions.UnauthorizedException;
+&nbsp;import com.pm.userauthenticationservice.exceptions.UserAlreadyExistException;
+&nbsp;import com.pm.userauthenticationservice.exceptions.UserNotRegisteredException;
+&nbsp;import com.pm.userauthenticationservice.models.User;
+&nbsp;import com.pm.userauthenticationservice.services.IAuthService;
+&nbsp;import org.antlr.v4.runtime.misc.Pair;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpHeaders;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.util.LinkedMultiValueMap;
+&nbsp;import org.springframework.util.MultiValueMap;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/auth&quot;)
+<b class="nc">&nbsp;public class AuthController {</b>
+&nbsp;    @Autowired
+&nbsp;    private IAuthService authService;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/signup&quot;)
+&nbsp;    public ResponseEntity&lt;UserDto&gt; signup(@RequestBody SignupRequest signupRequest){
+&nbsp;        try{
+<b class="nc">&nbsp;            User user = authService.signup(signupRequest.getEmail(),signupRequest.getPassword());</b>
+&nbsp;            //return new ResponseEntity&lt;&gt;(null, HttpStatus.CREATED);
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(from(user), HttpStatus.CREATED);</b>
+&nbsp;
+&nbsp;        }catch (UserAlreadyExistException exception){
+&nbsp;
+&nbsp;            //return ResponseEntity.badRequest().build();
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;((HttpHeaders) null, HttpStatus.BAD_REQUEST);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/login&quot;)
+&nbsp;    public ResponseEntity&lt;UserDto&gt; login(@RequestBody LoginRequest loginRequest){
+&nbsp;        try {
+<b class="nc">&nbsp;            Pair&lt;User,String&gt; response = authService.login(loginRequest.getEmail(),loginRequest.getPassword());</b>
+<b class="nc">&nbsp;            MultiValueMap&lt;String,String&gt; headers = new LinkedMultiValueMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            headers.add(HttpHeaders.SET_COOKIE,response.b);</b>
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(from(response.a), headers,HttpStatus.OK);</b>
+&nbsp;        } catch (UserNotRegisteredException exception) {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        } catch (PasswordMismatchException exception) {
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    @PostMapping(&quot;/validateToken&quot;)
+&nbsp;    public Boolean validateToken(@RequestBody ValidateTokenDto validateTokenDto) throws UnauthorizedException {
+<b class="nc">&nbsp;        Boolean result = authService.validateToken(validateTokenDto.getToken(), validateTokenDto.getUserId());</b>
+<b class="nc">&nbsp;        if(!result){</b>
+<b class="nc">&nbsp;            throw new UnauthorizedException(&quot;Please login again, Inconvenience regretted&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public UserDto from(User user){
+<b class="nc">&nbsp;        UserDto userDto = new UserDto();</b>
+<b class="nc">&nbsp;        userDto.setId(user.getId());</b>
+<b class="nc">&nbsp;        userDto.setEmail(user.getEmail());</b>
+<b class="nc">&nbsp;        userDto.setRoles(user.getRoles());</b>
+<b class="nc">&nbsp;        return userDto;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-04-27 20:18</div>
+</div>
+</body>
+</html>

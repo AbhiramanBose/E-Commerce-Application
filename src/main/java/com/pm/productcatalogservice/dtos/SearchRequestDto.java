@@ -1,0 +1,16 @@
+package com.pm.productcatalogservice.dtos;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Setter
+@Getter
+public class SearchRequestDto {
+    int pageSize;
+    int pageNumber;
+    String searchQuery;
+    List<SortParam> sortParamList = new ArrayList<>();
+}

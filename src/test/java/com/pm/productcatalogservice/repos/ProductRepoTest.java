@@ -15,11 +15,26 @@ class ProductRepoTest {
     private ProductRepo productRepo;
 
     @Test
+    public void insertDataInRDS(){
+        Product product1 =new Product();
+        product1.setId(1L);
+        product1.setName("Pen");
+        product1.setPrice(100.0);
+
+        Product product2= new Product();
+        product2.setName("MacBook M1");
+        product2.setPrice(100000.0);
+        product2.setId(2L);
+        productRepo.save(product1);
+        productRepo.save(product2);
+    }
+
+    //@Test
     public void testJpa(){
-        List<Product> productList=productRepo.findProductByOrderByPrice();
-        for(Product product:productList){
-            System.out.println(product.getPrice());
-        }
+//        List<Product> productList=productRepo.findProductByOrderByPrice();
+//        for(Product product:productList){
+//            System.out.println(product.getPrice());
+//        }
     }
 
     @Test
