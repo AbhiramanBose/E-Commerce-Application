@@ -36,3 +36,13 @@ build/
 ### VS Code ###
 .vscode/
 src/main/resources/application.properties
+
+# Build output
+target/
+
+# Coverage reports
+coverage/
+htmlReport/
+build/reports/
+target/site/
+htmlReport/
