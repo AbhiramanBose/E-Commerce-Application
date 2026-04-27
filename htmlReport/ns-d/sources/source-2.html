@@ -1,0 +1,242 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ProductController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.pm.productcatalogservice.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductController (com.pm.productcatalogservice.controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (8/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    72.3%
+  </span>
+  <span class="absValue">
+    (34/47)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.pm.productcatalogservice.controllers;
+&nbsp;
+&nbsp;import com.pm.productcatalogservice.dtos.CategoryDto;
+&nbsp;import com.pm.productcatalogservice.dtos.ProductDto;
+&nbsp;import com.pm.productcatalogservice.models.Category;
+&nbsp;import com.pm.productcatalogservice.models.Product;
+&nbsp;import com.pm.productcatalogservice.models.State;
+&nbsp;import com.pm.productcatalogservice.services.IProductService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Qualifier;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.util.LinkedMultiValueMap;
+&nbsp;import org.springframework.util.MultiValueMap;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/products&quot;)
+<b class="fc">&nbsp;public class ProductController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    //@Qualifier(&quot;sps&quot;)
+&nbsp;    private IProductService productService;
+&nbsp;
+&nbsp;//    @Autowired
+&nbsp;//    @Qualifier(&quot;fkps&quot;)
+&nbsp;//    private IProductService productService;
+&nbsp;
+&nbsp;    @GetMapping
+&nbsp;    public List&lt;ProductDto&gt; getAllProducts(){
+<b class="fc">&nbsp;        List&lt;ProductDto&gt; productDtos = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        List&lt;Product&gt; products= productService.getAllProducts();</b>
+<b class="fc">&nbsp;        for(Product product:products){</b>
+<b class="fc">&nbsp;            productDtos.add(from(product));</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return productDtos;</b>
+&nbsp;//        Product product = new Product();
+&nbsp;//        product.setId(1L);
+&nbsp;//        product.setName(&quot;Iphone&quot;);
+&nbsp;//        List&lt;Product&gt; products = new ArrayList&lt;&gt;();
+&nbsp;//        products.add(product);
+&nbsp;//        return products;
+&nbsp;    }
+&nbsp;    @GetMapping(&quot;/{productId}&quot;)
+&nbsp;    public ResponseEntity&lt;ProductDto&gt; findProductById(@PathVariable Long productId){
+&nbsp;//        long productId = id;
+&nbsp;//        Product product = new Product();
+&nbsp;//        product.setId(id);
+&nbsp;//        return product;
+&nbsp;        try{
+<b class="fc">&nbsp;        MultiValueMap&lt;String, String&gt; headers=new LinkedMultiValueMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        if(productId&lt;0){</b>
+<b class="fc">&nbsp;            headers.add(&quot;called&quot;,&quot;bhudwak&quot;);</b>
+&nbsp;            //return new ResponseEntity&lt;&gt;(null,headers, HttpStatus.BAD_REQUEST);
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Please try with product ID greater than 0&quot;);</b>
+<b class="pc">&nbsp;        }else if(productId==0){</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;No No ||&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        Product product=productService.getProductById(productId); //Dependency Inversion</b>
+<b class="fc">&nbsp;        headers.add(&quot;called by&quot;,&quot;intelligent&quot;);</b>
+<b class="pc">&nbsp;        if(product==null){</b>
+<b class="nc">&nbsp;            return new ResponseEntity&lt;&gt;(null,headers,HttpStatus.BAD_REQUEST);</b>
+&nbsp;        }
+&nbsp;//        return from(product);
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(from(product),headers,HttpStatus.OK);</b>
+&nbsp;        }
+&nbsp;        catch(IllegalArgumentException exception){
+&nbsp;            throw exception;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    private ProductDto from(Product product){
+<b class="fc">&nbsp;        ProductDto productDto = new ProductDto();</b>
+<b class="fc">&nbsp;        productDto.setId(product.getId());</b>
+<b class="fc">&nbsp;        productDto.setName(product.getName());</b>
+<b class="fc">&nbsp;        productDto.setDescription(product.getDescription());</b>
+<b class="fc">&nbsp;        productDto.setPrice(product.getPrice());</b>
+<b class="fc">&nbsp;        productDto.setImageUrl(product.getImageUrl());</b>
+<b class="pc">&nbsp;        if(product.getCategory()!=null){</b>
+<b class="nc">&nbsp;            CategoryDto categoryDto = new CategoryDto();</b>
+<b class="nc">&nbsp;            categoryDto.setName(product.getCategory().getName());</b>
+<b class="nc">&nbsp;            categoryDto.setId(product.getCategory().getId());</b>
+<b class="nc">&nbsp;            categoryDto.setDescription(product.getCategory().getDescription());</b>
+<b class="nc">&nbsp;            productDto.setCategory(categoryDto);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return productDto;</b>
+&nbsp;    }
+&nbsp;    private Product from(ProductDto productDto){
+<b class="fc">&nbsp;        Product product = new Product();</b>
+<b class="fc">&nbsp;        product.setId(productDto.getId());</b>
+&nbsp;//        product.setCreatedAt(new Date());
+&nbsp;//        product.setLastUpdatedAt(new Date());
+&nbsp;//        product.setState(State.ACTIVE);
+<b class="fc">&nbsp;        product.setName(productDto.getName());</b>
+<b class="fc">&nbsp;        product.setDescription(productDto.getDescription());</b>
+<b class="fc">&nbsp;        product.setPrice(productDto.getPrice());</b>
+<b class="fc">&nbsp;        product.setImageUrl(productDto.getImageUrl());</b>
+<b class="pc">&nbsp;        if(productDto.getCategory()!=null){</b>
+<b class="nc">&nbsp;            Category category = new Category();</b>
+<b class="nc">&nbsp;            category.setId(productDto.getCategory().getId());</b>
+<b class="nc">&nbsp;            category.setName(productDto.getCategory().getName());</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;            product.setCategory(category);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return product;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;    public ProductDto createProduct(@RequestBody ProductDto productDto){
+<b class="fc">&nbsp;        Product input =from(productDto);</b>
+<b class="fc">&nbsp;        Product output = productService.save(input);</b>
+<b class="fc">&nbsp;        return from(output);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    public ProductDto replaceProduct(@PathVariable Long id, @RequestBody ProductDto request){
+<b class="nc">&nbsp;        Product product = productService.replaceProduct(id,from(request));</b>
+<b class="nc">&nbsp;        return from(product);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-04-27 20:18</div>
+</div>
+</body>
+</html>

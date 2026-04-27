@@ -23,7 +23,7 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    @Qualifier("sps")
+    //@Qualifier("sps")
     private IProductService productService;
 
 //    @Autowired
@@ -53,11 +53,12 @@ public class ProductController {
 //        return product;
         try{
         MultiValueMap<String, String> headers=new LinkedMultiValueMap<>();
-        if(productId<=0){
+        if(productId<0){
             headers.add("called","bhudwak");
             //return new ResponseEntity<>(null,headers, HttpStatus.BAD_REQUEST);
             throw new IllegalArgumentException("Please try with product ID greater than 0");
-
+        }else if(productId==0){
+            throw new IllegalArgumentException("No No ||");
         }
         Product product=productService.getProductById(productId); //Dependency Inversion
         headers.add("called by","intelligent");
@@ -111,9 +112,10 @@ public class ProductController {
     }
 
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto product){
-        Product f= productService.save(from(product));
-        return from(f);
+    public ProductDto createProduct(@RequestBody ProductDto productDto){
+        Product input =from(productDto);
+        Product output = productService.save(input);
+        return from(output);
     }
 
     @PutMapping("/{id}")
